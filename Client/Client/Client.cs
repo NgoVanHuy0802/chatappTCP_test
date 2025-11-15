@@ -30,6 +30,8 @@ namespace Client
         private MyClient obj;
         private Task send = null;
         private bool exit = false;
+        private const int AuthorizationTimeoutMs = 5000;
+        private const int AttachmentLimitBytes = 5 * 1024 * 1024; // 5MB
 
         public Client()
         {
@@ -90,99 +92,95 @@ namespace Client
                 // === 1) IMAGE ===
                 if (msg.StartsWith("[IMAGE]"))
                 {
-                    // Format: [IMAGE]|username|filename|base64data
-                    string[] parts = msg.Split('|');
-                    string user = parts[1];
-                    string fileName = parts[2];
-                    string base64 = parts[3];
-
-                    // Label tên người gửi
-                    Label userLabel = new Label
+                    if (!TryParseAttachment(msg, out string user, out string fileName, out byte[] data, "hình ảnh"))
                     {
-                        Text = user + ":",
-                        AutoSize = true,
-                        Font = new Font("Segoe UI", 9.75f, FontStyle.Regular)
-                    };
-                    chatPanel.Controls.Add(userLabel);
+                        return;
+                    }
 
-                    // Base64 → Image
-                    byte[] data = Convert.FromBase64String(base64);
+                    AddSenderLabel(user);
+
+                    Image previewImage;
                     using (MemoryStream ms = new MemoryStream(data))
                     {
-                        PictureBox pic = new PictureBox
+                        try
                         {
-                            Image = Image.FromStream(ms),
-                            SizeMode = PictureBoxSizeMode.Zoom,
-                            Width = 250,
-                            Height = 180,
-                            Cursor = Cursors.Hand
-                        };
-
-                        pic.Click += (s, e) =>
+                            previewImage = (Image)Image.FromStream(ms).Clone();
+                        }
+                        catch (Exception ex)
                         {
-                            Form viewer = new Form
-                            {
-                                Text = fileName,
-                                Size = new Size(600, 600),
-                                StartPosition = FormStartPosition.CenterParent
-                            };
-
-                            PictureBox big = new PictureBox
-                            {
-                                Dock = DockStyle.Fill,
-                                Image = pic.Image,
-                                SizeMode = PictureBoxSizeMode.Zoom
-                            };
-
-                            viewer.Controls.Add(big);
-                            viewer.ShowDialog();
-                        };
-
-                        chatPanel.Controls.Add(pic);
+                            Log(ErrorMsg($"Không thể đọc hình ảnh: {ex.Message}"));
+                            return;
+                        }
                     }
+
+                    PictureBox pic = new PictureBox
+                    {
+                        Image = previewImage,
+                        SizeMode = PictureBoxSizeMode.Zoom,
+                        Width = 250,
+                        Height = 180,
+                        Cursor = Cursors.Hand
+                    };
+
+                    pic.Click += (s, e) => ShowImageViewer(fileName, previewImage);
+                    pic.Disposed += (s, e) => pic.Image?.Dispose();
+
+                    ContextMenuStrip menu = new ContextMenuStrip();
+                    menu.Items.Add("Xem ảnh", null, (s, e) => ShowImageViewer(fileName, previewImage));
+                    menu.Items.Add("Lưu ảnh...", null, (s, e) => SaveAttachment(data, fileName, "Image Files|*.png;*.jpg;*.jpeg;*.bmp|All files|*.*", askOpen: false));
+                    pic.ContextMenuStrip = menu;
+
+                    chatPanel.Controls.Add(pic);
                     return;
                 }
 
                 // === 2) FILE ===
                 if (msg.StartsWith("[FILE]"))
                 {
-                    // Format: [FILE]|username|filename|base64data
-                    string[] parts = msg.Split('|');
-                    string user = parts[1];
-                    string fileName = parts[2];
-                    string base64 = parts[3];
-
-                    // Label tên người gửi
-                    Label userLabel = new Label
+                    if (!TryParseAttachment(msg, out string user, out string fileName, out byte[] data, "tệp"))
                     {
-                        Text = user + ":",
-                        AutoSize = true,
-                        Font = new Font("Segoe UI", 10, FontStyle.Regular)
-                    };
-                    chatPanel.Controls.Add(userLabel);
+                        return;
+                    }
 
-                    // Tạo link bấm vào tải file
-                    Label link = new Label
+                    AddSenderLabel(user);
+
+                    FlowLayoutPanel fileContainer = new FlowLayoutPanel
+                    {
+                        AutoSize = true,
+                        FlowDirection = FlowDirection.LeftToRight,
+                        Margin = new Padding(0, 0, 0, 5)
+                    };
+
+                    Label fileLabel = new Label
                     {
                         Text = "📁 " + fileName,
                         AutoSize = true,
+                        Font = new Font("Segoe UI", 9.75f, FontStyle.Underline),
                         ForeColor = Color.Blue,
                         Cursor = Cursors.Hand,
-                        Font = new Font("Segoe UI", 9.75f, FontStyle.Underline)
+                        Margin = new Padding(0, 6, 6, 0)
                     };
+                    fileLabel.Click += (s, e) => SaveAttachment(data, fileName, "All files|*.*", askOpen: true);
 
-                    link.Click += (s, e) =>
+                    Button downloadButton = new Button
                     {
-                        try
-                        {
-                            string savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
-                            File.WriteAllBytes(savePath, Convert.FromBase64String(base64));
-                            Process.Start(savePath);
-                        }
-                        catch { MessageBox.Show("Cannot open file."); }
+                        Text = "Tải xuống",
+                        AutoSize = true,
+                        Margin = new Padding(0, 0, 6, 0)
+                    };
+                    downloadButton.Click += (s, e) => SaveAttachment(data, fileName, "All files|*.*", askOpen: true);
+
+                    Label sizeLabel = new Label
+                    {
+                        AutoSize = true,
+                        Text = $"({FormatFileSize(data.Length)})",
+                        Margin = new Padding(0, 6, 0, 0)
                     };
 
-                    chatPanel.Controls.Add(link);
+                    fileContainer.Controls.Add(fileLabel);
+                    fileContainer.Controls.Add(downloadButton);
+                    fileContainer.Controls.Add(sizeLabel);
+                    chatPanel.Controls.Add(fileContainer);
                     return;
                 }
 
@@ -195,6 +193,121 @@ namespace Client
                 };
                 chatPanel.Controls.Add(lbl);
             });
+        }
+
+        private bool TryDecodeBase64(string base64, string description, out byte[] data)
+        {
+            data = Array.Empty<byte>();
+            try
+            {
+                data = Convert.FromBase64String(base64);
+                return true;
+            }
+            catch (FormatException ex)
+            {
+                Log(ErrorMsg($"Dữ liệu {description} không hợp lệ: {ex.Message}"));
+            }
+            catch (Exception ex)
+            {
+                Log(ErrorMsg($"Không thể đọc dữ liệu {description}: {ex.Message}"));
+            }
+            return false;
+        }
+
+        private bool TryParseAttachment(string msg, out string user, out string fileName, out byte[] data, string description)
+        {
+            user = string.Empty;
+            fileName = string.Empty;
+            data = Array.Empty<byte>();
+            string[] parts = msg.Split('|');
+            if (parts.Length < 4)
+            {
+                Log(ErrorMsg($"Dữ liệu {description} không đúng định dạng."));
+                return false;
+            }
+            user = parts[1];
+            fileName = parts[2];
+            string base64 = string.Join("|", parts, 3, parts.Length - 3);
+            return TryDecodeBase64(base64, description, out data);
+        }
+
+        private void AddSenderLabel(string user)
+        {
+            Label userLabel = new Label
+            {
+                Text = user + ":",
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9.75f, FontStyle.Regular)
+            };
+            chatPanel.Controls.Add(userLabel);
+        }
+
+        private void SaveAttachment(byte[] data, string fileName, string filter, bool askOpen)
+        {
+            try
+            {
+                using (SaveFileDialog saveDialog = new SaveFileDialog
+                {
+                    FileName = fileName,
+                    Filter = filter
+                })
+                {
+                    if (saveDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        File.WriteAllBytes(saveDialog.FileName, data);
+                        if (askOpen)
+                        {
+                            DialogResult open = MessageBox.Show("Tệp đã lưu. Mở ngay bây giờ?", "Mở tệp", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (open == DialogResult.Yes)
+                            {
+                                ProcessStartInfo psi = new ProcessStartInfo(saveDialog.FileName)
+                                {
+                                    UseShellExecute = true
+                                };
+                                Process.Start(psi);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Không thể lưu tệp: {ex.Message}");
+            }
+        }
+
+        private void ShowImageViewer(string fileName, Image preview)
+        {
+            Form viewer = new Form
+            {
+                Text = fileName,
+                Size = new Size(600, 600),
+                StartPosition = FormStartPosition.CenterParent
+            };
+
+            PictureBox big = new PictureBox
+            {
+                Dock = DockStyle.Fill,
+                SizeMode = PictureBoxSizeMode.Zoom,
+                Image = (Image)preview.Clone()
+            };
+
+            viewer.FormClosed += (s, e) => big.Image?.Dispose();
+            viewer.Controls.Add(big);
+            viewer.ShowDialog();
+        }
+
+        private string FormatFileSize(long bytes)
+        {
+            string[] suffixes = { "B", "KB", "MB", "GB" };
+            double size = bytes;
+            int order = 0;
+            while (size >= 1024 && order < suffixes.Length - 1)
+            {
+                order++;
+                size /= 1024;
+            }
+            return $"{size:0.##} {suffixes[order]}";
         }
 
 
@@ -291,7 +404,13 @@ namespace Client
                 try
                 {
                     obj.stream.BeginRead(obj.buffer, 0, obj.buffer.Length, ReadAuth, null);
-                    obj.handle.WaitOne();
+                    bool signaled = obj.handle.WaitOne(AuthorizationTimeoutMs);
+                    if (!signaled)
+                    {
+                        Log(SystemMsg("Authorization timed out"));
+                        obj.client.Close();
+                        break;
+                    }
                     if (connected)
                     {
                         success = true;
@@ -346,8 +465,11 @@ namespace Client
                 string number = portTextBox.Text.Trim();
                 string username = usernameTextBox.Text.Trim();
                 IPAddress ip = null;
-                try { ip = Dns.GetHostAddresses(address)[0]; }
-                catch { error = true; Log(SystemMsg("Invalid address")); }
+                if (!TryResolveIPv4(address, out ip))
+                {
+                    error = true;
+                    Log(SystemMsg("Invalid address (must resolve to IPv4)"));
+                }
 
                 if (!int.TryParse(number, out int port)) { error = true; Log(SystemMsg("Invalid port")); }
                 if (username.Length < 1) { error = true; Log(SystemMsg("Username required")); }
@@ -409,6 +531,12 @@ namespace Client
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 string filePath = dlg.FileName;
+                FileInfo fileInfo = new FileInfo(filePath);
+                if (fileInfo.Length > AttachmentLimitBytes)
+                {
+                    MessageBox.Show($"Image exceeds {AttachmentLimitBytes / (1024 * 1024)} MB limit.");
+                    return;
+                }
                 string fileName = Path.GetFileName(filePath);
                 byte[] data = File.ReadAllBytes(filePath);
                 string base64 = Convert.ToBase64String(data);
@@ -432,6 +560,12 @@ namespace Client
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 string filePath = dlg.FileName;
+                FileInfo fileInfo = new FileInfo(filePath);
+                if (fileInfo.Length > AttachmentLimitBytes)
+                {
+                    MessageBox.Show($"File exceeds {AttachmentLimitBytes / (1024 * 1024)} MB limit.");
+                    return;
+                }
                 string fileName = Path.GetFileName(filePath);
                 byte[] data = File.ReadAllBytes(filePath);
                 string base64 = Convert.ToBase64String(data);
@@ -519,6 +653,34 @@ namespace Client
         private void chatPanel_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private bool TryResolveIPv4(string host, out IPAddress address)
+        {
+            address = null;
+            if (IPAddress.TryParse(host, out IPAddress literal) && literal.AddressFamily == AddressFamily.InterNetwork)
+            {
+                address = literal;
+                return true;
+            }
+
+            try
+            {
+                foreach (IPAddress candidate in Dns.GetHostEntry(host).AddressList)
+                {
+                    if (candidate.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        address = candidate;
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                // ignored - caller will display a friendly error
+            }
+
+            return false;
         }
     }
 }
