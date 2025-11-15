@@ -41,22 +41,39 @@ namespace Server
             InitializeComponent();
         }
 
-        private void Log(string msg = "") // clear the log if message is not supplied or is empty
+        private void Log(string msg)
         {
-            if (!exit)
+            if (exit || string.IsNullOrWhiteSpace(msg))
             {
-                logTextBox.Invoke((MethodInvoker)delegate
-                {
-                    if (msg.Length > 0)
-                    {
-                        logTextBox.AppendText(string.Format("[ {0} ] {1}{2}", DateTime.Now.ToString("HH:mm"), msg, Environment.NewLine));
-                    }
-                    else
-                    {
-                        logTextBox.Clear();
-                    }
-                });
+                return;
             }
+
+            chatPanel.Invoke((MethodInvoker)delegate
+            {
+                Color color = SystemColors.ControlText;
+                if (msg.StartsWith("ERROR"))
+                {
+                    color = Color.Firebrick;
+                }
+                else if (msg.StartsWith("SYSTEM"))
+                {
+                    color = Color.SteelBlue;
+                }
+
+                int maxWidth = Math.Max(50, chatPanel.ClientSize.Width - 25);
+
+                Label logEntry = new Label
+                {
+                    AutoSize = true,
+                    MaximumSize = new Size(maxWidth, 0),
+                    ForeColor = color,
+                    Text = string.Format("[ {0} ] {1}", DateTime.Now.ToString("HH:mm"), msg),
+                    Margin = new Padding(0, 0, 0, 4)
+                };
+
+                chatPanel.Controls.Add(logEntry);
+                chatPanel.ScrollControlIntoView(logEntry);
+            });
         }
 
         private string ErrorMsg(string msg)
@@ -587,7 +604,6 @@ namespace Server
 
         private void ClearButton_Click(object sender, EventArgs e)
         {
-            Log();
             chatPanel.Controls.Clear();
         }
 
@@ -686,6 +702,7 @@ namespace Server
                     pic.ContextMenuStrip = menu;
 
                     chatPanel.Controls.Add(pic);
+                    chatPanel.ScrollControlIntoView(pic);
                     return;
                 }
 
@@ -735,6 +752,7 @@ namespace Server
                     fileContainer.Controls.Add(downloadButton);
                     fileContainer.Controls.Add(sizeLabel);
                     chatPanel.Controls.Add(fileContainer);
+                    chatPanel.ScrollControlIntoView(fileContainer);
                 }
             });
         }

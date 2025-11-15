@@ -45,7 +45,6 @@ namespace Server
             this.disconnectButton = new System.Windows.Forms.Button();
             this.sendTextBox = new System.Windows.Forms.TextBox();
             this.sendLabel = new System.Windows.Forms.Label();
-            this.logLabel = new System.Windows.Forms.Label();
             this.clientsDataGridView = new System.Windows.Forms.DataGridView();
             this.identifier = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -58,7 +57,6 @@ namespace Server
             this.keyLabel = new System.Windows.Forms.Label();
             this.addrTextBox = new System.Windows.Forms.TextBox();
             this.checkBox = new System.Windows.Forms.CheckBox();
-            this.logTextBox = new System.Windows.Forms.TextBox();
             this.contentLabel = new System.Windows.Forms.Label();
             this.chatPanel = new System.Windows.Forms.FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.clientsDataGridView)).BeginInit();
@@ -156,16 +154,6 @@ namespace Server
             this.sendLabel.TabIndex = 28;
             this.sendLabel.Text = "Send";
             // 
-            // logLabel
-            // 
-            this.logLabel.AutoSize = true;
-            this.logLabel.BackColor = System.Drawing.Color.Transparent;
-            this.logLabel.Location = new System.Drawing.Point(284, 138);
-            this.logLabel.Margin = new System.Windows.Forms.Padding(8, 4, 4, 4);
-            this.logLabel.Name = "logLabel";
-            this.logLabel.Size = new System.Drawing.Size(25, 13);
-            this.logLabel.TabIndex = 29;
-            this.logLabel.Text = "Log";
             // 
             // clientsDataGridView
             // 
@@ -367,39 +355,25 @@ namespace Server
             this.checkBox.UseVisualStyleBackColor = false;
             this.checkBox.CheckedChanged += new System.EventHandler(this.CheckBox_CheckedChanged);
             // 
-            // logTextBox
-            // 
-            this.logTextBox.BackColor = System.Drawing.SystemColors.Window;
-            this.logTextBox.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
-            this.logTextBox.Location = new System.Drawing.Point(13, 159);
-            this.logTextBox.Margin = new System.Windows.Forms.Padding(4);
-            this.logTextBox.Multiline = true;
-            this.logTextBox.Name = "logTextBox";
-            this.logTextBox.ReadOnly = true;
-            this.logTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.logTextBox.Size = new System.Drawing.Size(566, 200);
-            this.logTextBox.TabIndex = 24;
-            this.logTextBox.TabStop = false;
-            //
             // contentLabel
             //
             this.contentLabel.AutoSize = true;
             this.contentLabel.BackColor = System.Drawing.Color.Transparent;
-            this.contentLabel.Location = new System.Drawing.Point(10, 366);
+            this.contentLabel.Location = new System.Drawing.Point(10, 138);
             this.contentLabel.Margin = new System.Windows.Forms.Padding(8, 4, 4, 4);
             this.contentLabel.Name = "contentLabel";
-            this.contentLabel.Size = new System.Drawing.Size(93, 13);
+            this.contentLabel.Size = new System.Drawing.Size(119, 13);
             this.contentLabel.TabIndex = 43;
-            this.contentLabel.Text = "Nội dung đính kèm";
+            this.contentLabel.Text = "Hoạt động & đính kèm";
             //
             // chatPanel
             //
             this.chatPanel.AutoScroll = true;
             this.chatPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.chatPanel.Location = new System.Drawing.Point(13, 385);
+            this.chatPanel.Location = new System.Drawing.Point(13, 159);
             this.chatPanel.Margin = new System.Windows.Forms.Padding(4);
             this.chatPanel.Name = "chatPanel";
-            this.chatPanel.Size = new System.Drawing.Size(566, 160);
+            this.chatPanel.Size = new System.Drawing.Size(566, 412);
             this.chatPanel.TabIndex = 44;
             // 
             // Server
@@ -416,12 +390,10 @@ namespace Server
             this.Controls.Add(this.usernameLabel);
             this.Controls.Add(this.totalLabel);
             this.Controls.Add(this.clientsDataGridView);
-            this.Controls.Add(this.logLabel);
             this.Controls.Add(this.sendLabel);
             this.Controls.Add(this.sendTextBox);
             this.Controls.Add(this.disconnectButton);
             this.Controls.Add(this.clearButton);
-            this.Controls.Add(this.logTextBox);
             this.Controls.Add(this.startButton);
             this.Controls.Add(this.portLabel);
             this.Controls.Add(this.localaddrLabel);
@@ -450,7 +422,6 @@ namespace Server
         private System.Windows.Forms.Button disconnectButton;
         private System.Windows.Forms.TextBox sendTextBox;
         private System.Windows.Forms.Label sendLabel;
-        private System.Windows.Forms.Label logLabel;
         private System.Windows.Forms.DataGridView clientsDataGridView;
         private System.Windows.Forms.Label totalLabel;
         private System.Windows.Forms.Label usernameLabel;
@@ -463,7 +434,6 @@ namespace Server
         private System.Windows.Forms.DataGridViewTextBoxColumn name;
         private System.Windows.Forms.DataGridViewButtonColumn dc;
         private System.Windows.Forms.DataGridViewButtonColumn Message;
-        private TextBox logTextBox;
         private System.Windows.Forms.Label contentLabel;
         private System.Windows.Forms.FlowLayoutPanel chatPanel;
     }
