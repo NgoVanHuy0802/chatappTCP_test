@@ -379,17 +379,10 @@ namespace Server
                     error = true;
                     Log(SystemMsg("Address is required"));
                 }
-                else
+                else if (!TryResolveIPv4(address, out ip))
                 {
-                    try
-                    {
-                        ip = Dns.GetHostEntry(address).AddressList[0];
-                    }
-                    catch
-                    {
-                        error = true;
-                        Log(SystemMsg("Address is not valid"));
-                    }
+                    error = true;
+                    Log(SystemMsg("Address is not valid or is not IPv4"));
                 }
                 int port = -1;
                 if (number.Length < 1)
@@ -608,6 +601,34 @@ namespace Server
         private void clientsDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+
+        private bool TryResolveIPv4(string host, out IPAddress ipAddress)
+        {
+            ipAddress = null;
+            if (IPAddress.TryParse(host, out IPAddress literal) && literal.AddressFamily == AddressFamily.InterNetwork)
+            {
+                ipAddress = literal;
+                return true;
+            }
+
+            try
+            {
+                foreach (IPAddress candidate in Dns.GetHostEntry(host).AddressList)
+                {
+                    if (candidate.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        ipAddress = candidate;
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                // ignored - method will return false so we can show a friendly error.
+            }
+
+            return false;
         }
     }
 }

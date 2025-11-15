@@ -465,8 +465,11 @@ namespace Client
                 string number = portTextBox.Text.Trim();
                 string username = usernameTextBox.Text.Trim();
                 IPAddress ip = null;
-                try { ip = Dns.GetHostAddresses(address)[0]; }
-                catch { error = true; Log(SystemMsg("Invalid address")); }
+                if (!TryResolveIPv4(address, out ip))
+                {
+                    error = true;
+                    Log(SystemMsg("Invalid address (must resolve to IPv4)"));
+                }
 
                 if (!int.TryParse(number, out int port)) { error = true; Log(SystemMsg("Invalid port")); }
                 if (username.Length < 1) { error = true; Log(SystemMsg("Username required")); }
@@ -650,6 +653,34 @@ namespace Client
         private void chatPanel_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private bool TryResolveIPv4(string host, out IPAddress address)
+        {
+            address = null;
+            if (IPAddress.TryParse(host, out IPAddress literal) && literal.AddressFamily == AddressFamily.InterNetwork)
+            {
+                address = literal;
+                return true;
+            }
+
+            try
+            {
+                foreach (IPAddress candidate in Dns.GetHostEntry(host).AddressList)
+                {
+                    if (candidate.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        address = candidate;
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                // ignored - caller will display a friendly error
+            }
+
+            return false;
         }
     }
 }
