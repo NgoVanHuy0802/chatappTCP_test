@@ -30,6 +30,8 @@ namespace Client
         private MyClient obj;
         private Task send = null;
         private bool exit = false;
+        private const int AuthorizationTimeoutMs = 5000;
+        private const int AttachmentLimitBytes = 5 * 1024 * 1024; // 5MB
 
         public Client()
         {
@@ -96,6 +98,11 @@ namespace Client
                     string fileName = parts[2];
                     string base64 = parts[3];
 
+                    if (!TryDecodeBase64(base64, "hình ảnh", out byte[] data))
+                    {
+                        return;
+                    }
+
                     // Label tên người gửi
                     Label userLabel = new Label
                     {
@@ -106,12 +113,22 @@ namespace Client
                     chatPanel.Controls.Add(userLabel);
 
                     // Base64 → Image
-                    byte[] data = Convert.FromBase64String(base64);
                     using (MemoryStream ms = new MemoryStream(data))
                     {
+                        Image previewImage;
+                        try
+                        {
+                            previewImage = (Image)Image.FromStream(ms).Clone();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log(ErrorMsg($"Không thể đọc hình ảnh: {ex.Message}"));
+                            return;
+                        }
+
                         PictureBox pic = new PictureBox
                         {
-                            Image = Image.FromStream(ms),
+                            Image = previewImage,
                             SizeMode = PictureBoxSizeMode.Zoom,
                             Width = 250,
                             Height = 180,
@@ -152,6 +169,11 @@ namespace Client
                     string fileName = parts[2];
                     string base64 = parts[3];
 
+                    if (!TryDecodeBase64(base64, "tệp", out byte[] data))
+                    {
+                        return;
+                    }
+
                     // Label tên người gửi
                     Label userLabel = new Label
                     {
@@ -175,11 +197,31 @@ namespace Client
                     {
                         try
                         {
-                            string savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
-                            File.WriteAllBytes(savePath, Convert.FromBase64String(base64));
-                            Process.Start(savePath);
+                            using (SaveFileDialog saveDialog = new SaveFileDialog
+                            {
+                                FileName = fileName,
+                                Filter = "All files|*.*"
+                            })
+                            {
+                                if (saveDialog.ShowDialog() == DialogResult.OK)
+                                {
+                                    File.WriteAllBytes(saveDialog.FileName, data);
+                                    DialogResult open = MessageBox.Show("File saved. Open now?", "Open file", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                                    if (open == DialogResult.Yes)
+                                    {
+                                        ProcessStartInfo psi = new ProcessStartInfo(saveDialog.FileName)
+                                        {
+                                            UseShellExecute = true
+                                        };
+                                        Process.Start(psi);
+                                    }
+                                }
+                            }
                         }
-                        catch { MessageBox.Show("Cannot open file."); }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Cannot save file: {ex.Message}");
+                        }
                     };
 
                     chatPanel.Controls.Add(link);
@@ -195,6 +237,25 @@ namespace Client
                 };
                 chatPanel.Controls.Add(lbl);
             });
+        }
+
+        private bool TryDecodeBase64(string base64, string description, out byte[] data)
+        {
+            data = Array.Empty<byte>();
+            try
+            {
+                data = Convert.FromBase64String(base64);
+                return true;
+            }
+            catch (FormatException ex)
+            {
+                Log(ErrorMsg($"Dữ liệu {description} không hợp lệ: {ex.Message}"));
+            }
+            catch (Exception ex)
+            {
+                Log(ErrorMsg($"Không thể đọc dữ liệu {description}: {ex.Message}"));
+            }
+            return false;
         }
 
 
@@ -291,7 +352,13 @@ namespace Client
                 try
                 {
                     obj.stream.BeginRead(obj.buffer, 0, obj.buffer.Length, ReadAuth, null);
-                    obj.handle.WaitOne();
+                    bool signaled = obj.handle.WaitOne(AuthorizationTimeoutMs);
+                    if (!signaled)
+                    {
+                        Log(SystemMsg("Authorization timed out"));
+                        obj.client.Close();
+                        break;
+                    }
                     if (connected)
                     {
                         success = true;
@@ -409,6 +476,12 @@ namespace Client
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 string filePath = dlg.FileName;
+                FileInfo fileInfo = new FileInfo(filePath);
+                if (fileInfo.Length > AttachmentLimitBytes)
+                {
+                    MessageBox.Show($"Image exceeds {AttachmentLimitBytes / (1024 * 1024)} MB limit.");
+                    return;
+                }
                 string fileName = Path.GetFileName(filePath);
                 byte[] data = File.ReadAllBytes(filePath);
                 string base64 = Convert.ToBase64String(data);
@@ -432,6 +505,12 @@ namespace Client
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 string filePath = dlg.FileName;
+                FileInfo fileInfo = new FileInfo(filePath);
+                if (fileInfo.Length > AttachmentLimitBytes)
+                {
+                    MessageBox.Show($"File exceeds {AttachmentLimitBytes / (1024 * 1024)} MB limit.");
+                    return;
+                }
                 string fileName = Path.GetFileName(filePath);
                 byte[] data = File.ReadAllBytes(filePath);
                 string base64 = Convert.ToBase64String(data);

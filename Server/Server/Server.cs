@@ -383,7 +383,7 @@ namespace Server
                 {
                     try
                     {
-                        ip = Dns.Resolve(address).AddressList[0];
+                        ip = Dns.GetHostEntry(address).AddressList[0];
                     }
                     catch
                     {
