@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.connectButton = new System.Windows.Forms.Button();
             this.portLabel = new System.Windows.Forms.Label();
             this.localaddrLabel = new System.Windows.Forms.Label();
@@ -44,6 +45,8 @@
             this.checkBox = new System.Windows.Forms.CheckBox();
             this.chatPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.btnSend = new System.Windows.Forms.Button();
+            this.clockLabel = new System.Windows.Forms.Label();
+            this.clockTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // connectButton
@@ -89,6 +92,7 @@
             this.portTextBox.TabStop = false;
             this.portTextBox.Text = "9000";
             this.portTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.portTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ConnectionFields_KeyDown);
             // 
             // logLabel
             // 
@@ -154,6 +158,7 @@
             this.usernameTextBox.TabStop = false;
             this.usernameTextBox.Text = "Client";
             this.usernameTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.usernameTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ConnectionFields_KeyDown);
             // 
             // keyLabel
             // 
@@ -171,10 +176,12 @@
             this.keyTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.keyTextBox.MaxLength = 200;
             this.keyTextBox.Name = "keyTextBox";
+            this.keyTextBox.PasswordChar = '*';
             this.keyTextBox.Size = new System.Drawing.Size(132, 20);
             this.keyTextBox.TabIndex = 37;
             this.keyTextBox.TabStop = false;
             this.keyTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.keyTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ConnectionFields_KeyDown);
             // 
             // addrTextBox
             // 
@@ -188,14 +195,18 @@
             this.addrTextBox.TabStop = false;
             this.addrTextBox.Text = "127.0.0.1";
             this.addrTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.addrTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ConnectionFields_KeyDown);
             // 
             // checkBox
             // 
+            this.checkBox.AutoSize = true;
+            this.checkBox.Checked = true;
+            this.checkBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.checkBox.Location = new System.Drawing.Point(449, 74);
             this.checkBox.Margin = new System.Windows.Forms.Padding(4);
             this.checkBox.Name = "checkBox";
-            this.checkBox.Size = new System.Drawing.Size(72, 20);
+            this.checkBox.Size = new System.Drawing.Size(72, 17);
             this.checkBox.TabIndex = 41;
             this.checkBox.Text = "Hide key";
             this.checkBox.UseVisualStyleBackColor = true;
@@ -218,7 +229,7 @@
             this.chatPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.chatPanel_Paint);
             // 
             // btnSend
-            // 
+            //
             this.btnSend.Location = new System.Drawing.Point(49, 442);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(68, 22);
@@ -226,11 +237,28 @@
             this.btnSend.Text = "Attach";
             this.btnSend.UseVisualStyleBackColor = true;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
-            // 
+            //
+            // clockLabel
+            //
+            this.clockLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.clockLabel.AutoSize = true;
+            this.clockLabel.Location = new System.Drawing.Point(357, 84);
+            this.clockLabel.Name = "clockLabel";
+            this.clockLabel.Size = new System.Drawing.Size(104, 13);
+            this.clockLabel.TabIndex = 44;
+            this.clockLabel.Text = "00:00:00 01/01/2000";
+            //
+            // clockTimer
+            //
+            this.clockTimer.Enabled = true;
+            this.clockTimer.Interval = 1000;
+            this.clockTimer.Tick += new System.EventHandler(this.ClockTimer_Tick);
+            //
             // Client
-            // 
+            //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(594, 501);
+            this.Controls.Add(this.clockLabel);
             this.Controls.Add(this.btnSend);
             this.Controls.Add(this.chatPanel);
             this.Controls.Add(this.checkBox);
@@ -278,6 +306,8 @@
         private System.Windows.Forms.CheckBox checkBox;
         private System.Windows.Forms.FlowLayoutPanel chatPanel;
         private System.Windows.Forms.Button btnSend;
+        private System.Windows.Forms.Label clockLabel;
+        private System.Windows.Forms.Timer clockTimer;
     }
 }
 
