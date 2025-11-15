@@ -30,6 +30,7 @@ namespace Server
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle22 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle27 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle28 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -45,7 +46,6 @@ namespace Server
             this.disconnectButton = new System.Windows.Forms.Button();
             this.sendTextBox = new System.Windows.Forms.TextBox();
             this.sendLabel = new System.Windows.Forms.Label();
-            this.logLabel = new System.Windows.Forms.Label();
             this.clientsDataGridView = new System.Windows.Forms.DataGridView();
             this.identifier = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -58,7 +58,10 @@ namespace Server
             this.keyLabel = new System.Windows.Forms.Label();
             this.addrTextBox = new System.Windows.Forms.TextBox();
             this.checkBox = new System.Windows.Forms.CheckBox();
-            this.logTextBox = new System.Windows.Forms.TextBox();
+            this.contentLabel = new System.Windows.Forms.Label();
+            this.chatPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.clockLabel = new System.Windows.Forms.Label();
+            this.clockTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.clientsDataGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -107,6 +110,7 @@ namespace Server
             this.portTextBox.TabStop = false;
             this.portTextBox.Text = "9000";
             this.portTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.portTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ConnectionFields_KeyDown);
             // 
             // clearButton
             // 
@@ -134,7 +138,7 @@ namespace Server
             // 
             // sendTextBox
             // 
-            this.sendTextBox.Location = new System.Drawing.Point(13, 488);
+            this.sendTextBox.Location = new System.Drawing.Point(13, 580);
             this.sendTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.sendTextBox.Name = "sendTextBox";
             this.sendTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -142,28 +146,18 @@ namespace Server
             this.sendTextBox.TabIndex = 27;
             this.sendTextBox.TabStop = false;
             this.sendTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SendTextBox_KeyDown);
-            // 
+            //
             // sendLabel
-            // 
+            //
             this.sendLabel.AutoSize = true;
             this.sendLabel.BackColor = System.Drawing.Color.Transparent;
-            this.sendLabel.Location = new System.Drawing.Point(10, 467);
+            this.sendLabel.Location = new System.Drawing.Point(10, 559);
             this.sendLabel.Margin = new System.Windows.Forms.Padding(8, 4, 4, 4);
             this.sendLabel.Name = "sendLabel";
             this.sendLabel.Size = new System.Drawing.Size(32, 13);
             this.sendLabel.TabIndex = 28;
             this.sendLabel.Text = "Send";
             // 
-            // logLabel
-            // 
-            this.logLabel.AutoSize = true;
-            this.logLabel.BackColor = System.Drawing.Color.Transparent;
-            this.logLabel.Location = new System.Drawing.Point(284, 138);
-            this.logLabel.Margin = new System.Windows.Forms.Padding(8, 4, 4, 4);
-            this.logLabel.Name = "logLabel";
-            this.logLabel.Size = new System.Drawing.Size(25, 13);
-            this.logLabel.TabIndex = 29;
-            this.logLabel.Text = "Log";
             // 
             // clientsDataGridView
             // 
@@ -221,7 +215,7 @@ namespace Server
             this.clientsDataGridView.ShowCellToolTips = false;
             this.clientsDataGridView.ShowEditingIcon = false;
             this.clientsDataGridView.ShowRowErrors = false;
-            this.clientsDataGridView.Size = new System.Drawing.Size(341, 495);
+            this.clientsDataGridView.Size = new System.Drawing.Size(341, 587);
             this.clientsDataGridView.TabIndex = 30;
             this.clientsDataGridView.TabStop = false;
             this.clientsDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ClientsDataGridView_CellClick);
@@ -317,6 +311,7 @@ namespace Server
             this.usernameTextBox.TabStop = false;
             this.usernameTextBox.Text = "Server";
             this.usernameTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.usernameTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ConnectionFields_KeyDown);
             // 
             // keyTextBox
             // 
@@ -324,10 +319,12 @@ namespace Server
             this.keyTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.keyTextBox.MaxLength = 200;
             this.keyTextBox.Name = "keyTextBox";
+            this.keyTextBox.PasswordChar = '*';
             this.keyTextBox.Size = new System.Drawing.Size(132, 20);
             this.keyTextBox.TabIndex = 36;
             this.keyTextBox.TabStop = false;
             this.keyTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.keyTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ConnectionFields_KeyDown);
             // 
             // keyLabel
             // 
@@ -351,39 +348,69 @@ namespace Server
             this.addrTextBox.TabStop = false;
             this.addrTextBox.Text = "127.0.0.1";
             this.addrTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.addrTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ConnectionFields_KeyDown);
             // 
             // checkBox
             // 
             this.checkBox.BackColor = System.Drawing.Color.Transparent;
+            this.checkBox.AutoSize = true;
+            this.checkBox.Checked = true;
+            this.checkBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.checkBox.Location = new System.Drawing.Point(447, 74);
             this.checkBox.Margin = new System.Windows.Forms.Padding(4);
             this.checkBox.Name = "checkBox";
-            this.checkBox.Size = new System.Drawing.Size(72, 20);
+            this.checkBox.Size = new System.Drawing.Size(72, 17);
             this.checkBox.TabIndex = 42;
             this.checkBox.Text = "Hide key";
             this.checkBox.UseVisualStyleBackColor = false;
             this.checkBox.CheckedChanged += new System.EventHandler(this.CheckBox_CheckedChanged);
             // 
-            // logTextBox
-            // 
-            this.logTextBox.BackColor = System.Drawing.SystemColors.Window;
-            this.logTextBox.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
-            this.logTextBox.Location = new System.Drawing.Point(13, 159);
-            this.logTextBox.Margin = new System.Windows.Forms.Padding(4);
-            this.logTextBox.Multiline = true;
-            this.logTextBox.Name = "logTextBox";
-            this.logTextBox.ReadOnly = true;
-            this.logTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.logTextBox.Size = new System.Drawing.Size(566, 300);
-            this.logTextBox.TabIndex = 24;
-            this.logTextBox.TabStop = false;
-            // 
+            // contentLabel
+            //
+            this.contentLabel.AutoSize = true;
+            this.contentLabel.BackColor = System.Drawing.Color.Transparent;
+            this.contentLabel.Location = new System.Drawing.Point(10, 138);
+            this.contentLabel.Margin = new System.Windows.Forms.Padding(8, 4, 4, 4);
+            this.contentLabel.Name = "contentLabel";
+            this.contentLabel.Size = new System.Drawing.Size(119, 13);
+            this.contentLabel.TabIndex = 43;
+            this.contentLabel.Text = "Hoạt động & đính kèm";
+            //
+            // chatPanel
+            //
+            this.chatPanel.AutoScroll = true;
+            this.chatPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.chatPanel.Location = new System.Drawing.Point(13, 159);
+            this.chatPanel.Margin = new System.Windows.Forms.Padding(4);
+            this.chatPanel.Name = "chatPanel";
+            this.chatPanel.Size = new System.Drawing.Size(566, 412);
+            this.chatPanel.TabIndex = 44;
+            //
+            // clockLabel
+            //
+            this.clockLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.clockLabel.AutoSize = true;
+            this.clockLabel.Location = new System.Drawing.Point(357, 104);
+            this.clockLabel.Name = "clockLabel";
+            this.clockLabel.Size = new System.Drawing.Size(104, 13);
+            this.clockLabel.TabIndex = 45;
+            this.clockLabel.Text = "00:00:00 01/01/2000";
+            //
+            // clockTimer
+            //
+            this.clockTimer.Enabled = true;
+            this.clockTimer.Interval = 1000;
+            this.clockTimer.Tick += new System.EventHandler(this.ClockTimer_Tick);
+            //
             // Server
-            // 
+            //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(938, 521);
+            this.ClientSize = new System.Drawing.Size(938, 620);
+            this.Controls.Add(this.clockLabel);
             this.Controls.Add(this.checkBox);
+            this.Controls.Add(this.chatPanel);
+            this.Controls.Add(this.contentLabel);
             this.Controls.Add(this.addrTextBox);
             this.Controls.Add(this.keyTextBox);
             this.Controls.Add(this.keyLabel);
@@ -391,12 +418,10 @@ namespace Server
             this.Controls.Add(this.usernameLabel);
             this.Controls.Add(this.totalLabel);
             this.Controls.Add(this.clientsDataGridView);
-            this.Controls.Add(this.logLabel);
             this.Controls.Add(this.sendLabel);
             this.Controls.Add(this.sendTextBox);
             this.Controls.Add(this.disconnectButton);
             this.Controls.Add(this.clearButton);
-            this.Controls.Add(this.logTextBox);
             this.Controls.Add(this.startButton);
             this.Controls.Add(this.portLabel);
             this.Controls.Add(this.localaddrLabel);
@@ -425,7 +450,6 @@ namespace Server
         private System.Windows.Forms.Button disconnectButton;
         private System.Windows.Forms.TextBox sendTextBox;
         private System.Windows.Forms.Label sendLabel;
-        private System.Windows.Forms.Label logLabel;
         private System.Windows.Forms.DataGridView clientsDataGridView;
         private System.Windows.Forms.Label totalLabel;
         private System.Windows.Forms.Label usernameLabel;
@@ -438,7 +462,10 @@ namespace Server
         private System.Windows.Forms.DataGridViewTextBoxColumn name;
         private System.Windows.Forms.DataGridViewButtonColumn dc;
         private System.Windows.Forms.DataGridViewButtonColumn Message;
-        private TextBox logTextBox;
+        private System.Windows.Forms.Label contentLabel;
+        private System.Windows.Forms.FlowLayoutPanel chatPanel;
+        private System.Windows.Forms.Label clockLabel;
+        private System.Windows.Forms.Timer clockTimer;
     }
 }
 
