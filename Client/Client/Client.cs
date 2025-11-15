@@ -92,30 +92,16 @@ namespace Client
                 // === 1) IMAGE ===
                 if (msg.StartsWith("[IMAGE]"))
                 {
-                    // Format: [IMAGE]|username|filename|base64data
-                    string[] parts = msg.Split('|');
-                    string user = parts[1];
-                    string fileName = parts[2];
-                    string base64 = parts[3];
-
-                    if (!TryDecodeBase64(base64, "hình ảnh", out byte[] data))
+                    if (!TryParseAttachment(msg, out string user, out string fileName, out byte[] data, "hình ảnh"))
                     {
                         return;
                     }
 
-                    // Label tên người gửi
-                    Label userLabel = new Label
-                    {
-                        Text = user + ":",
-                        AutoSize = true,
-                        Font = new Font("Segoe UI", 9.75f, FontStyle.Regular)
-                    };
-                    chatPanel.Controls.Add(userLabel);
+                    AddSenderLabel(user);
 
-                    // Base64 → Image
+                    Image previewImage;
                     using (MemoryStream ms = new MemoryStream(data))
                     {
-                        Image previewImage;
                         try
                         {
                             previewImage = (Image)Image.FromStream(ms).Clone();
@@ -125,106 +111,76 @@ namespace Client
                             Log(ErrorMsg($"Không thể đọc hình ảnh: {ex.Message}"));
                             return;
                         }
-
-                        PictureBox pic = new PictureBox
-                        {
-                            Image = previewImage,
-                            SizeMode = PictureBoxSizeMode.Zoom,
-                            Width = 250,
-                            Height = 180,
-                            Cursor = Cursors.Hand
-                        };
-
-                        pic.Click += (s, e) =>
-                        {
-                            Form viewer = new Form
-                            {
-                                Text = fileName,
-                                Size = new Size(600, 600),
-                                StartPosition = FormStartPosition.CenterParent
-                            };
-
-                            PictureBox big = new PictureBox
-                            {
-                                Dock = DockStyle.Fill,
-                                Image = pic.Image,
-                                SizeMode = PictureBoxSizeMode.Zoom
-                            };
-
-                            viewer.Controls.Add(big);
-                            viewer.ShowDialog();
-                        };
-
-                        chatPanel.Controls.Add(pic);
                     }
+
+                    PictureBox pic = new PictureBox
+                    {
+                        Image = previewImage,
+                        SizeMode = PictureBoxSizeMode.Zoom,
+                        Width = 250,
+                        Height = 180,
+                        Cursor = Cursors.Hand
+                    };
+
+                    pic.Click += (s, e) => ShowImageViewer(fileName, previewImage);
+                    pic.Disposed += (s, e) => pic.Image?.Dispose();
+
+                    ContextMenuStrip menu = new ContextMenuStrip();
+                    menu.Items.Add("Xem ảnh", null, (s, e) => ShowImageViewer(fileName, previewImage));
+                    menu.Items.Add("Lưu ảnh...", null, (s, e) => SaveAttachment(data, fileName, "Image Files|*.png;*.jpg;*.jpeg;*.bmp|All files|*.*", askOpen: false));
+                    pic.ContextMenuStrip = menu;
+
+                    chatPanel.Controls.Add(pic);
                     return;
                 }
 
                 // === 2) FILE ===
                 if (msg.StartsWith("[FILE]"))
                 {
-                    // Format: [FILE]|username|filename|base64data
-                    string[] parts = msg.Split('|');
-                    string user = parts[1];
-                    string fileName = parts[2];
-                    string base64 = parts[3];
-
-                    if (!TryDecodeBase64(base64, "tệp", out byte[] data))
+                    if (!TryParseAttachment(msg, out string user, out string fileName, out byte[] data, "tệp"))
                     {
                         return;
                     }
 
-                    // Label tên người gửi
-                    Label userLabel = new Label
-                    {
-                        Text = user + ":",
-                        AutoSize = true,
-                        Font = new Font("Segoe UI", 10, FontStyle.Regular)
-                    };
-                    chatPanel.Controls.Add(userLabel);
+                    AddSenderLabel(user);
 
-                    // Tạo link bấm vào tải file
-                    Label link = new Label
+                    FlowLayoutPanel fileContainer = new FlowLayoutPanel
+                    {
+                        AutoSize = true,
+                        FlowDirection = FlowDirection.LeftToRight,
+                        Margin = new Padding(0, 0, 0, 5)
+                    };
+
+                    Label fileLabel = new Label
                     {
                         Text = "📁 " + fileName,
                         AutoSize = true,
+                        Font = new Font("Segoe UI", 9.75f, FontStyle.Underline),
                         ForeColor = Color.Blue,
                         Cursor = Cursors.Hand,
-                        Font = new Font("Segoe UI", 9.75f, FontStyle.Underline)
+                        Margin = new Padding(0, 6, 6, 0)
                     };
+                    fileLabel.Click += (s, e) => SaveAttachment(data, fileName, "All files|*.*", askOpen: true);
 
-                    link.Click += (s, e) =>
+                    Button downloadButton = new Button
                     {
-                        try
-                        {
-                            using (SaveFileDialog saveDialog = new SaveFileDialog
-                            {
-                                FileName = fileName,
-                                Filter = "All files|*.*"
-                            })
-                            {
-                                if (saveDialog.ShowDialog() == DialogResult.OK)
-                                {
-                                    File.WriteAllBytes(saveDialog.FileName, data);
-                                    DialogResult open = MessageBox.Show("File saved. Open now?", "Open file", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                                    if (open == DialogResult.Yes)
-                                    {
-                                        ProcessStartInfo psi = new ProcessStartInfo(saveDialog.FileName)
-                                        {
-                                            UseShellExecute = true
-                                        };
-                                        Process.Start(psi);
-                                    }
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"Cannot save file: {ex.Message}");
-                        }
+                        Text = "Tải xuống",
+                        AutoSize = true,
+                        Margin = new Padding(0, 0, 6, 0)
+                    };
+                    downloadButton.Click += (s, e) => SaveAttachment(data, fileName, "All files|*.*", askOpen: true);
+
+                    Label sizeLabel = new Label
+                    {
+                        AutoSize = true,
+                        Text = $"({FormatFileSize(data.Length)})",
+                        Margin = new Padding(0, 6, 0, 0)
                     };
 
-                    chatPanel.Controls.Add(link);
+                    fileContainer.Controls.Add(fileLabel);
+                    fileContainer.Controls.Add(downloadButton);
+                    fileContainer.Controls.Add(sizeLabel);
+                    chatPanel.Controls.Add(fileContainer);
                     return;
                 }
 
@@ -256,6 +212,102 @@ namespace Client
                 Log(ErrorMsg($"Không thể đọc dữ liệu {description}: {ex.Message}"));
             }
             return false;
+        }
+
+        private bool TryParseAttachment(string msg, out string user, out string fileName, out byte[] data, string description)
+        {
+            user = string.Empty;
+            fileName = string.Empty;
+            data = Array.Empty<byte>();
+            string[] parts = msg.Split('|');
+            if (parts.Length < 4)
+            {
+                Log(ErrorMsg($"Dữ liệu {description} không đúng định dạng."));
+                return false;
+            }
+            user = parts[1];
+            fileName = parts[2];
+            string base64 = string.Join("|", parts, 3, parts.Length - 3);
+            return TryDecodeBase64(base64, description, out data);
+        }
+
+        private void AddSenderLabel(string user)
+        {
+            Label userLabel = new Label
+            {
+                Text = user + ":",
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9.75f, FontStyle.Regular)
+            };
+            chatPanel.Controls.Add(userLabel);
+        }
+
+        private void SaveAttachment(byte[] data, string fileName, string filter, bool askOpen)
+        {
+            try
+            {
+                using (SaveFileDialog saveDialog = new SaveFileDialog
+                {
+                    FileName = fileName,
+                    Filter = filter
+                })
+                {
+                    if (saveDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        File.WriteAllBytes(saveDialog.FileName, data);
+                        if (askOpen)
+                        {
+                            DialogResult open = MessageBox.Show("Tệp đã lưu. Mở ngay bây giờ?", "Mở tệp", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (open == DialogResult.Yes)
+                            {
+                                ProcessStartInfo psi = new ProcessStartInfo(saveDialog.FileName)
+                                {
+                                    UseShellExecute = true
+                                };
+                                Process.Start(psi);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Không thể lưu tệp: {ex.Message}");
+            }
+        }
+
+        private void ShowImageViewer(string fileName, Image preview)
+        {
+            Form viewer = new Form
+            {
+                Text = fileName,
+                Size = new Size(600, 600),
+                StartPosition = FormStartPosition.CenterParent
+            };
+
+            PictureBox big = new PictureBox
+            {
+                Dock = DockStyle.Fill,
+                SizeMode = PictureBoxSizeMode.Zoom,
+                Image = (Image)preview.Clone()
+            };
+
+            viewer.FormClosed += (s, e) => big.Image?.Dispose();
+            viewer.Controls.Add(big);
+            viewer.ShowDialog();
+        }
+
+        private string FormatFileSize(long bytes)
+        {
+            string[] suffixes = { "B", "KB", "MB", "GB" };
+            double size = bytes;
+            int order = 0;
+            while (size >= 1024 && order < suffixes.Length - 1)
+            {
+                order++;
+                size /= 1024;
+            }
+            return $"{size:0.##} {suffixes[order]}";
         }
 
 
