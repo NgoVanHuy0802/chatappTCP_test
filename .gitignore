@@ -1,0 +1,87 @@
+# ===============================
+#  .gitignore for C# WinForms App
+# ===============================
+
+# Build results
+bin/
+obj/
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Auto-generated files
+*.pdb
+*.cache
+*.log
+*.dbmdl
+*.bak
+*.tmp
+*.tmp_proj
+
+# Test results
+TestResults/
+*.coverage
+*.coveragexml
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+*.nuspec
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Build tools
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Publish
+publish/
+*.publishsettings
+
+# User-specific files
+*.vscode/
+*.vsconfig
+.vscode/
+.idea/
+*.sln.iml
+
+# Environment and secrets
+.env
+appsettings.Development.json
+secrets.json
+
+# Windows specific files
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ReSharper / Rider
+_ReSharper*/
+*.DotSettings.user
+
+# Backup files
+*.bak
+*.old
+
+# Others
+*.exe
+*.dll
+*.zip
+*.rar
+*.7z
+*.iso
