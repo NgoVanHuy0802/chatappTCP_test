@@ -30,13 +30,13 @@ namespace Server
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle22 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle27 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle28 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle23 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle24 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle25 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle26 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.startButton = new System.Windows.Forms.Button();
             this.portLabel = new System.Windows.Forms.Label();
             this.localaddrLabel = new System.Windows.Forms.Label();
@@ -81,7 +81,7 @@ namespace Server
             this.portLabel.Location = new System.Drawing.Point(410, 21);
             this.portLabel.Margin = new System.Windows.Forms.Padding(8, 4, 4, 4);
             this.portLabel.Name = "portLabel";
-            this.portLabel.Size = new System.Drawing.Size(29, 13);
+            this.portLabel.Size = new System.Drawing.Size(34, 16);
             this.portLabel.TabIndex = 22;
             this.portLabel.Text = "Port:";
             // 
@@ -92,7 +92,7 @@ namespace Server
             this.localaddrLabel.Location = new System.Drawing.Point(210, 21);
             this.localaddrLabel.Margin = new System.Windows.Forms.Padding(8, 4, 4, 4);
             this.localaddrLabel.Name = "localaddrLabel";
-            this.localaddrLabel.Size = new System.Drawing.Size(48, 13);
+            this.localaddrLabel.Size = new System.Drawing.Size(61, 16);
             this.localaddrLabel.TabIndex = 21;
             this.localaddrLabel.Text = "Address:";
             // 
@@ -102,7 +102,7 @@ namespace Server
             this.portTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.portTextBox.MaxLength = 10;
             this.portTextBox.Name = "portTextBox";
-            this.portTextBox.Size = new System.Drawing.Size(132, 20);
+            this.portTextBox.Size = new System.Drawing.Size(132, 22);
             this.portTextBox.TabIndex = 20;
             this.portTextBox.TabStop = false;
             this.portTextBox.Text = "9000";
@@ -138,22 +138,21 @@ namespace Server
             this.sendTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.sendTextBox.Name = "sendTextBox";
             this.sendTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.sendTextBox.Size = new System.Drawing.Size(566, 20);
+            this.sendTextBox.Size = new System.Drawing.Size(566, 22);
             this.sendTextBox.TabIndex = 27;
             this.sendTextBox.TabStop = false;
             this.sendTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SendTextBox_KeyDown);
-            //
+            // 
             // sendLabel
-            //
+            // 
             this.sendLabel.AutoSize = true;
             this.sendLabel.BackColor = System.Drawing.Color.Transparent;
             this.sendLabel.Location = new System.Drawing.Point(10, 559);
             this.sendLabel.Margin = new System.Windows.Forms.Padding(8, 4, 4, 4);
             this.sendLabel.Name = "sendLabel";
-            this.sendLabel.Size = new System.Drawing.Size(32, 13);
+            this.sendLabel.Size = new System.Drawing.Size(39, 16);
             this.sendLabel.TabIndex = 28;
             this.sendLabel.Text = "Send";
-            // 
             // 
             // clientsDataGridView
             // 
@@ -165,14 +164,14 @@ namespace Server
             this.clientsDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.clientsDataGridView.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
             this.clientsDataGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle22.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle22.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle22.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle22.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle22.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle22.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle22.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.clientsDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle22;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.clientsDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.clientsDataGridView.ColumnHeadersHeight = 24;
             this.clientsDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.clientsDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -189,19 +188,19 @@ namespace Server
             this.clientsDataGridView.Name = "clientsDataGridView";
             this.clientsDataGridView.ReadOnly = true;
             this.clientsDataGridView.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle27.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle27.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle27.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.clientsDataGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle27;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.clientsDataGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.clientsDataGridView.RowHeadersVisible = false;
             this.clientsDataGridView.RowHeadersWidth = 40;
             this.clientsDataGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridViewCellStyle28.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle28.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            dataGridViewCellStyle28.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle28.SelectionBackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle28.SelectionForeColor = System.Drawing.Color.Black;
-            this.clientsDataGridView.RowsDefaultCellStyle = dataGridViewCellStyle28;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.Color.Black;
+            this.clientsDataGridView.RowsDefaultCellStyle = dataGridViewCellStyle7;
             this.clientsDataGridView.RowTemplate.Height = 24;
             this.clientsDataGridView.RowTemplate.ReadOnly = true;
             this.clientsDataGridView.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
@@ -220,8 +219,8 @@ namespace Server
             // identifier
             // 
             this.identifier.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.identifier.DefaultCellStyle = dataGridViewCellStyle23;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.identifier.DefaultCellStyle = dataGridViewCellStyle2;
             this.identifier.HeaderText = "ID";
             this.identifier.MaxInputLength = 20;
             this.identifier.MinimumWidth = 20;
@@ -233,8 +232,8 @@ namespace Server
             // name
             // 
             this.name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle24.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.name.DefaultCellStyle = dataGridViewCellStyle24;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.name.DefaultCellStyle = dataGridViewCellStyle3;
             this.name.HeaderText = "Name";
             this.name.MaxInputLength = 20;
             this.name.MinimumWidth = 20;
@@ -245,9 +244,9 @@ namespace Server
             // dc
             // 
             this.dc.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle25.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle25.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dc.DefaultCellStyle = dataGridViewCellStyle25;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dc.DefaultCellStyle = dataGridViewCellStyle4;
             this.dc.HeaderText = "Disconnect";
             this.dc.MinimumWidth = 20;
             this.dc.Name = "dc";
@@ -260,9 +259,9 @@ namespace Server
             // Message
             // 
             this.Message.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle26.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle26.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.Message.DefaultCellStyle = dataGridViewCellStyle26;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.Message.DefaultCellStyle = dataGridViewCellStyle5;
             this.Message.HeaderText = "Gửi tin nhắn";
             this.Message.MinimumWidth = 20;
             this.Message.Name = "Message";
@@ -292,7 +291,7 @@ namespace Server
             this.usernameLabel.Location = new System.Drawing.Point(206, 49);
             this.usernameLabel.Margin = new System.Windows.Forms.Padding(8, 4, 4, 4);
             this.usernameLabel.Name = "usernameLabel";
-            this.usernameLabel.Size = new System.Drawing.Size(52, 13);
+            this.usernameLabel.Size = new System.Drawing.Size(66, 16);
             this.usernameLabel.TabIndex = 33;
             this.usernameLabel.Text = "Userame:";
             // 
@@ -302,7 +301,7 @@ namespace Server
             this.usernameTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.usernameTextBox.MaxLength = 50;
             this.usernameTextBox.Name = "usernameTextBox";
-            this.usernameTextBox.Size = new System.Drawing.Size(132, 20);
+            this.usernameTextBox.Size = new System.Drawing.Size(132, 22);
             this.usernameTextBox.TabIndex = 34;
             this.usernameTextBox.TabStop = false;
             this.usernameTextBox.Text = "Server";
@@ -314,7 +313,7 @@ namespace Server
             this.keyTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.keyTextBox.MaxLength = 200;
             this.keyTextBox.Name = "keyTextBox";
-            this.keyTextBox.Size = new System.Drawing.Size(132, 20);
+            this.keyTextBox.Size = new System.Drawing.Size(132, 22);
             this.keyTextBox.TabIndex = 36;
             this.keyTextBox.TabStop = false;
             this.keyTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -326,7 +325,7 @@ namespace Server
             this.keyLabel.Location = new System.Drawing.Point(411, 49);
             this.keyLabel.Margin = new System.Windows.Forms.Padding(8, 4, 4, 4);
             this.keyLabel.Name = "keyLabel";
-            this.keyLabel.Size = new System.Drawing.Size(28, 13);
+            this.keyLabel.Size = new System.Drawing.Size(33, 16);
             this.keyLabel.TabIndex = 35;
             this.keyLabel.Text = "Key:";
             // 
@@ -336,7 +335,7 @@ namespace Server
             this.addrTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.addrTextBox.MaxLength = 200;
             this.addrTextBox.Name = "addrTextBox";
-            this.addrTextBox.Size = new System.Drawing.Size(132, 20);
+            this.addrTextBox.Size = new System.Drawing.Size(132, 22);
             this.addrTextBox.TabIndex = 37;
             this.addrTextBox.TabStop = false;
             this.addrTextBox.Text = "127.0.0.1";
@@ -356,25 +355,27 @@ namespace Server
             this.checkBox.CheckedChanged += new System.EventHandler(this.CheckBox_CheckedChanged);
             // 
             // contentLabel
-            //
+            // 
             this.contentLabel.AutoSize = true;
             this.contentLabel.BackColor = System.Drawing.Color.Transparent;
-            this.contentLabel.Location = new System.Drawing.Point(10, 138);
+            this.contentLabel.Location = new System.Drawing.Point(235, 129);
             this.contentLabel.Margin = new System.Windows.Forms.Padding(8, 4, 4, 4);
             this.contentLabel.Name = "contentLabel";
-            this.contentLabel.Size = new System.Drawing.Size(119, 13);
+            this.contentLabel.Size = new System.Drawing.Size(130, 16);
             this.contentLabel.TabIndex = 43;
             this.contentLabel.Text = "Hoạt động & đính kèm";
-            //
+            // 
             // chatPanel
-            //
+            // 
             this.chatPanel.AutoScroll = true;
             this.chatPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.chatPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.chatPanel.Location = new System.Drawing.Point(13, 159);
             this.chatPanel.Margin = new System.Windows.Forms.Padding(4);
             this.chatPanel.Name = "chatPanel";
             this.chatPanel.Size = new System.Drawing.Size(566, 412);
             this.chatPanel.TabIndex = 44;
+            this.chatPanel.WrapContents = false;
             // 
             // Server
             // 
